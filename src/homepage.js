@@ -1,191 +1,143 @@
-$(document).ready(heroScroll);
-$(document).ready(bookParallax);
-$(document).ready(posterParallax);
-$(document).ready(homeNavChange);
-$(document).ready(heroTime);
+$(document).ready(function () {
+  gsap.registerPlugin(ScrollTrigger, CustomEase);
+  CustomEase.create('primary', '0.51, 0, 0.08, 1');
 
-// ________ Home Nav Transparent _____________________________
-function homeNavChange() {
-  let navTrigger = gsap.timeline({
-    scrollTrigger: {
-      trigger: 'body',
-      start: () => innerHeight / 2,
-      end: () => innerHeight / 2,
-      toggleActions: 'none play none reverse',
-    },
-  });
-  navTrigger.to(
-    '.nav_dropdown-list',
-    {
-      backgroundColor: 'white',
-      duration: 0.75,
-    },
-    '<'
-  );
-  navTrigger.to(
-    '.navbar',
-    {
-      backgroundColor: 'white',
-    },
-    '<'
-  );
-  navTrigger.to(
-    '.navbar_brand-star',
-    {
-      width: '25%',
-      duration: 0.75,
-      opacity: 0,
-      ease: 'power4.inOut',
-    },
-    '<'
-  ),
-    navTrigger.to(
-      '.s_logo-path',
-      {
-        y: '0%',
-        duration: 0.5,
-        ease: 'power4.inOut',
-        stagger: { amount: 0.04 },
-        delay: 0.2,
-      },
-      '<'
-    );
-}
+  gsap.defaults({ ease: 'primary' });
 
-// ________ Home Hero Scroll _____________________________
-function heroScroll() {
-  let heroScroll = gsap.timeline({
-    scrollTrigger: {
-      trigger: '.home_hero',
-      start: 'top top',
+  // Tags
+  function createScrollTrigger(tag) {
+    return {
+      trigger: tag,
+      start: 'top bottom',
       end: 'bottom top',
-      scrub: 0.25,
-    },
-  });
-  heroScroll.to(
-    '.home_hero-inner',
-    {
-      y: '10rem',
-    },
-    '<'
-  );
-  heroScroll.to(
-    '.home_hero-swiper-sticky',
-    {
-      rotation: -8,
-      scale: 0.6,
-      /*width: "60svw",
-      height: "75svh",*/
-    },
-    '<'
-  );
-}
-
-// _______ Hero Time
-function heroTime() {
-  // Time
-  var { DateTime } = luxon;
-
-  function updateTime() {
-    var userLocalTime = DateTime.local();
-    var estTime = userLocalTime.setZone('America/New_York').toFormat('HH:mm');
-    $('[data-real-time]').text(estTime);
+      scrub: 1,
+      markers: true,
+    };
   }
 
-  // Load
-  updateTime();
+  function animateTag(tag) {
+    const yDistance = $(window).width() > 991 ? gsap.utils.random(10, 20) : gsap.utils.random(3, 5);
+    let tl = gsap.timeline({
+      scrollTrigger: createScrollTrigger(tag),
+    });
 
-  // Real Time
-  setInterval(updateTime, 1000);
-}
+    tl.from(tag, {
+      rotate: 0,
+      y: `${yDistance}vh`,
+      ease: 'power1.in',
+    });
+  }
 
-// __________ Book sliding up on homepage _____________
-function bookParallax() {
-  let bookParallax = gsap.timeline({
-    scrollTrigger: {
-      trigger: '.home_book-inner',
-      start: 'top bottom',
-      end: 'bottom top',
-      scrub: 0.75,
-    },
+  $('[data-tag]').each(function () {
+    animateTag($(this));
   });
-  bookParallax.fromTo(
-    '.home_book-cover',
-    {
-      yPercent: 100,
-      rotation: 20,
-    },
-    {
-      yPercent: -25,
-      rotation: -5,
-    }
-  );
-}
 
-// __________ Netflix Poster sliding up on homepage _____________
-function posterParallax() {
-  let posterParallax = gsap.timeline({
-    scrollTrigger: {
-      trigger: '.home_netflix-inner',
-      start: 'top bottom',
-      end: 'bottom top',
-      scrub: 0.75,
-    },
+  // Visuals
+  $('[data-visual]').each(function () {
+    let visual = $(this);
+    let tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: visual,
+        start: 'top bottom',
+        end: 'top top',
+        scrub: 1,
+      },
+    });
+
+    tl.from(visual, { rotate: 0, ease: 'power1.in' });
   });
-  posterParallax.fromTo(
-    '.netflix_poster',
-    {
-      yPercent: 20,
-      rotation: -10,
-    },
-    {
-      yPercent: -50,
-      rotation: 20,
-    }
-  );
-}
 
-// _____________ Swiper Galleries _________________
+  // HP Video
+  $('.hp_video').each(function () {
+    let video = $(this);
+    let tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: video,
+        start: 'top bottom',
+        end: 'top top',
+        scrub: 1,
+      },
+    });
 
-//_______ Home Hero
-const swiperHomeHero = new Swiper('.swiper.is-home-hero', {
-  // Optional parameters
-  effect: 'slide',
-  loop: true,
-  parallax: true,
-  slidesPerView: 1,
-  autoplay: {
-    delay: 2000,
-  },
-  speed: 1000,
-});
+    tl.fromTo(
+      video,
+      { width: '100%', borderRadius: '4rem' },
+      { width: '100vw', borderRadius: '0rem' }
+    );
+  });
 
-//_______ Home Press
-const swiperHomePress = new Swiper('.swiper.is-press', {
-  // Optional parameters
-  effect: 'fade',
-  fadeEffect: {
-    crossFade: true,
-  },
-  loop: true,
-  slidesPerView: 1,
-  autoplay: {
-    delay: 800,
-  },
-  speed: 10,
-});
+  // HP Brands
+  $('.hp_brands-box').each(function () {
+    let textTags = $(this).find('.hp_brands-text-wrap');
+    let plusSymbol = $(this).find('.hp_brands-plus');
+    let eqSymbol = $(this).find('.hp_brands-sol');
+    let visuals = $(this).find('.hp_brands_visual');
 
-//_______ Home Trust Logos
-const swiperHomeTrust = new Swiper('.swiper.trust-home-logos', {
-  // Optional parameters
-  effect: 'fade',
-  fadeEffect: {
-    crossFade: true,
-  },
-  loop: true,
-  slidesPerView: 1,
-  autoplay: {
-    delay: 500,
-  },
-  speed: 10,
+    let tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: $(this),
+        start: 'center bottom',
+      },
+    });
+
+    tl.from(textTags.eq(0), { rotate: 0, y: '2rem', opacity: 0, duration: 0.7 });
+    tl.from(plusSymbol, { opacity: 0 }, '-=0.3');
+    tl.from(textTags.eq(1), { rotate: 0, y: '2rem', opacity: 0 }, '-=0.1');
+    tl.from(eqSymbol, { opacity: 0 }, '-=0.3');
+    tl.from(visuals.eq(0), { rotate: 0, opacity: 0 }, '-=0.2');
+    tl.from(textTags.eq(2), { rotate: 0, y: '2rem', opacity: 0 }, '-=0.3');
+    tl.from(visuals.eq(1), { opacity: 0 }, '<');
+  });
+
+  // HP Grid
+  $('.hp_brands-card-box').each(function () {
+    let cards = $(this).find('.hp_brands-card');
+    let logos = $(this).find('.hp_brands_logo');
+    let tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: $(this),
+        start: '20% bottom',
+      },
+    });
+
+    tl.from(cards, { opacity: 0, scale: 0.9, stagger: 0.2 });
+    tl.from(logos, { y: '2rem', opacity: 0, stagger: 0.2 }, '<0.3');
+  });
+
+  // HP Candy
+  $('.section_hp-candy').each(function () {
+    let tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: $(this).find('.hp_candy_photo-wrap'),
+        start: 'top bottom',
+        end: 'top center',
+        scrub: 1,
+      },
+    });
+
+    $(this)
+      .find('.hp_candy_visual')
+      .each(function () {
+        tl.from(
+          $(this),
+          {
+            rotate: 0,
+            y: `${gsap.utils.random(10, 40)}vh`,
+            ease: 'power1.in',
+          },
+          '<'
+        );
+      });
+  });
+
+  $('.hp_candy-bottom-shape-wrap').each(function () {
+    let tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: $(this),
+        start: 'bottom bottom',
+      },
+    });
+
+    tl.from($(this).find('.hp_candy-bottom_visual img'), { yPercent: 100, stagger: 0.2 });
+  });
 });
