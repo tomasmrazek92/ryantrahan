@@ -1,68 +1,82 @@
+/* eslint-disable prefer-destructuring */
 $(document).ready(function () {
-  gsap.registerPlugin(ScrollTrigger, CustomEase);
-  CustomEase.create('primary', '0.51, 0, 0.08, 1');
+  // #region Nav
 
-  gsap.defaults({ ease: 'primary' });
-
-  // Tags
-  function createScrollTrigger(tag) {
-    return {
-      trigger: tag,
-      start: 'top bottom',
-      end: 'bottom top',
-      scrub: 1,
-      markers: true,
+  function debounce(func, wait) {
+    let timeout;
+    return function (...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func.apply(this, args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
     };
   }
 
-  function animateTag(tag) {
-    const yDistance = $(window).width() > 991 ? gsap.utils.random(10, 20) : gsap.utils.random(3, 5);
-    let tl = gsap.timeline({
-      scrollTrigger: createScrollTrigger(tag),
-    });
+  let isMoved = false;
 
-    tl.from(tag, {
-      rotate: 0,
-      y: `${yDistance}vh`,
-      ease: 'power1.in',
-    });
-  }
-
-  $('[data-tag]').each(function () {
-    animateTag($(this));
+  let tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: $('.nav_wrapper'),
+      start: () => 'bottom bottom',
+      end: 'bottom top',
+      onEnter: debounce(() => {
+        if (!isMoved) {
+          isMoved = true;
+          gsap.to('.hp_navbar', { yPercent: -100 });
+        }
+      }, 200), // Adjust the debounce delay as needed
+      onLeaveBack: debounce(() => {
+        if (isMoved) {
+          isMoved = false;
+          gsap.to('.hp_navbar', { yPercent: 0 });
+        }
+      }, 200), // Adjust the debounce delay as needed
+    },
   });
 
-  // Visuals
-  $('[data-visual]').each(function () {
-    let visual = $(this);
+  // #endregion
+
+  // #region Animations
+  // HP Video Title
+  $('.hp_hero-heading-wrap.is-last').each(function () {
+    let headings = $(this).find('.hp_hero-heading_wrap-inner').add('.hp_video-title-wrap');
+
+    console.log(headings);
+
     let tl = gsap.timeline({
       scrollTrigger: {
-        trigger: visual,
-        start: 'top bottom',
-        end: 'top top',
+        trigger: $(this),
+        start: 'bottom bottom',
+        end: 'center center',
         scrub: 1,
       },
     });
 
-    tl.from(visual, { rotate: 0, ease: 'power1.in' });
+    headings.each(function () {
+      tl.from($(this), {
+        opacity: 0,
+      });
+    });
   });
 
   // HP Video
   $('.hp_video').each(function () {
-    let video = $(this);
+    let video = $(this).find('.hp_video-inner');
     let tl = gsap.timeline({
       scrollTrigger: {
         trigger: video,
-        start: 'top bottom',
-        end: 'top top',
+        start: 'top top',
+        end: '20% top',
         scrub: 1,
       },
     });
 
     tl.fromTo(
       video,
-      { width: '100%', borderRadius: '4rem' },
-      { width: '100vw', borderRadius: '0rem' }
+      { width: '100%', height: '50%', borderRadius: '4rem' },
+      { width: '100vw', height: '100vh', borderRadius: '0rem', ease: 'linear' }
     );
   });
 
@@ -89,47 +103,94 @@ $(document).ready(function () {
     tl.from(visuals.eq(1), { opacity: 0 }, '<');
   });
 
-  // HP Grid
-  $('.hp_brands-card-box').each(function () {
-    let cards = $(this).find('.hp_brands-card');
-    let logos = $(this).find('.hp_brands_logo');
-    let tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: $(this),
-        start: '20% bottom',
-      },
-    });
-
-    tl.from(cards, { opacity: 0, scale: 0.9, stagger: 0.2 });
-    tl.from(logos, { y: '2rem', opacity: 0, stagger: 0.2 }, '<0.3');
-  });
-
   // HP Candy
   $('.section_hp-candy').each(function () {
-    let tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: $(this).find('.hp_candy_photo-wrap'),
-        start: 'top bottom',
-        end: 'top center',
-        scrub: 1,
-      },
+    let heading = $(this).find('h2');
+    let visualsWrap = $(this).find('.hp_candy_photo-wrap');
+
+    let button = $(this).find('.hp_candy-bottom-btn');
+
+    heading.each(function () {
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: $(this),
+          start: 'bottom bottom',
+          end: 'bottom 80%',
+          scrub: 1,
+        },
+      });
+      tl.from($(this), { y: '4rem', opacity: 0 });
     });
 
-    $(this)
-      .find('.hp_candy_visual')
-      .each(function () {
-        tl.from(
-          $(this),
+    visualsWrap.each(function () {
+      let visuals = $(this).find('.hp_candy_visual');
+      // Partnership Brands
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: $(this),
+          start: '20% bottom',
+          end: 'bottom bottom',
+          scrub: 1,
+        },
+      });
+
+      // Pictures
+      tl.from(
+        visuals.eq(0),
+        {
+          x: '10vw',
+          rotate: '0deg',
+        },
+        '<0.05'
+      )
+        .from(
+          visuals.eq(1),
           {
-            rotate: 0,
-            y: `${gsap.utils.random(10, 40)}vh`,
-            ease: 'power1.in',
+            x: '-10vw',
+            rotate: '0deg',
+          },
+          '<'
+        )
+        .from(
+          visuals.eq(2),
+          {
+            x: '-10vw',
+            rotate: '0deg',
           },
           '<'
         );
+
+      // Opacity
+      tl.fromTo(
+        [visuals],
+        { opacity: 0 },
+        {
+          keyframes: {
+            '30%': {
+              opacity: 1,
+            },
+          },
+          duration: 0.5,
+        },
+        '<'
+      );
+    });
+
+    button.each(function () {
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: $(this),
+          start: 'center bottom',
+          end: 'bottom bottom',
+          markers: true,
+          scrub: 1,
+        },
       });
+      tl.from($(this), { opacity: 0 });
+    });
   });
 
+  // HP Candy Bags
   $('.hp_candy-bottom-shape-wrap').each(function () {
     let tl = gsap.timeline({
       scrollTrigger: {
@@ -140,4 +201,6 @@ $(document).ready(function () {
 
     tl.from($(this).find('.hp_candy-bottom_visual img'), { yPercent: 100, stagger: 0.2 });
   });
+
+  // #endregion
 });
