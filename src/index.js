@@ -34,6 +34,10 @@ $('[data-tag]').each(function () {
 // Visuals
 $('[data-visual]').each(function () {
   let visual = $(this);
+  let isLeft = $(this).attr('data-visual') === 'left';
+
+  let rotation = isLeft ? gsap.utils.random(5, 10) : gsap.utils.random(-5, -10);
+
   let tl = gsap.timeline({
     scrollTrigger: {
       trigger: visual,
@@ -43,7 +47,7 @@ $('[data-visual]').each(function () {
     },
   });
 
-  tl.from(visual, { rotate: 0, ease: 'power1.in' });
+  tl.from(visual, { rotate: rotation }, { rotate: rotation, ease: 'power1.in' });
 });
 
 // Parallax
@@ -118,88 +122,235 @@ $('[data-split="heading"]').each(function () {
       });
     } else {
       tl.from($(this), { opacity: 0 }, '<');
-      tl.fromTo($(this), { scale: 0 }, { scale: 1, duration: 0.2, ease: 'bounce' }, '<');
+      tl.fromTo(
+        $(this),
+        { scale: 0, rotate: 0 },
+        { scale: 1, rotate: gsap.utils.random(-3, 3, 1), duration: 0.2, ease: 'back.out(1.7)' },
+        '<'
+      );
     }
   });
 });
 
 // Partnership Brands
-$('.partnership_brands-wrap').each(function () {
-  let tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: $(this),
-      start: 'top 80%',
-      end: 'bottom top',
-      scrub: 1,
-    },
-  });
-
-  let visuals = $(this).find('.partnership_brands_visual');
-
-  // Heading
-  tl.fromTo(
-    [$(this).find('h2')],
-    { opacity: 0, yPercent: 100 },
-    {
-      keyframes: {
-        '15%': {
-          opacity: 1,
-          yPercent: 0,
+ScrollTrigger.matchMedia({
+  // large
+  '(min-width: 992px)': function () {
+    $('.partnership_brands-wrap').each(function () {
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: $(this),
+          start: 'top 80%',
+          end: 'bottom top',
+          scrub: 1,
         },
-      },
-      duration: 0.5,
-    },
-    '<'
-  );
+      });
 
-  // Pictures
-  tl.from(
-    visuals.eq(0),
-    {
-      x: '20vw',
-      rotate: '0deg',
-    },
-    '<0.05'
-  )
-    .from(
-      visuals.eq(1),
-      {
-        x: '10vw',
-        rotate: '0deg',
+      let visuals = $(this).find('.partnership_brands_visual');
+
+      // Heading
+      tl.fromTo(
+        [$(this).find('h2')],
+        { opacity: 0, yPercent: 100 },
+        {
+          keyframes: {
+            '15%': {
+              opacity: 1,
+              yPercent: 0,
+            },
+          },
+          duration: 0.5,
+        },
+        '<'
+      );
+
+      // Pictures
+      tl.from(
+        visuals.eq(0),
+        {
+          x: '20vw',
+          rotate: '0deg',
+        },
+        '<0.05'
+      )
+        .from(
+          visuals.eq(1),
+          {
+            x: '10vw',
+            rotate: '0deg',
+          },
+          '<'
+        )
+        .from(
+          visuals.eq(2),
+          {
+            x: '-10vw',
+            rotate: '0deg',
+          },
+          '<'
+        )
+        .from(
+          visuals.eq(3),
+          {
+            x: '-20vw',
+            rotate: '0deg',
+          },
+          '<'
+        );
+
+      // Opacity
+      tl.fromTo(
+        [visuals],
+        { opacity: 0 },
+        {
+          keyframes: {
+            '30%': {
+              opacity: 1,
+            },
+          },
+          duration: 0.5,
+        },
+        '<'
+      );
+    });
+  },
+
+  // medium
+  '(min-width: 480px) and (max-width: 991px)': function () {
+    $('.partnership_brands-wrap').each(function () {
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: $(this),
+          start: 'top 80%',
+          end: 'bottom top',
+          scrub: 1,
+        },
+      });
+
+      let visuals = $(this).find('.partnership_brands_visual');
+
+      // Heading
+      tl.fromTo(
+        [$(this).find('h2')],
+        { opacity: 0, yPercent: 100 },
+        {
+          keyframes: {
+            '15%': {
+              opacity: 1,
+              yPercent: 0,
+            },
+          },
+          duration: 0.5,
+        },
+        '<'
+      );
+
+      // Pictures
+      tl.from(
+        visuals.eq(0),
+        {
+          x: '10vw',
+          rotate: '0deg',
+        },
+        '<0.05'
+      )
+        .from(
+          visuals.eq(1),
+          {
+            x: '-10vw',
+            rotate: '0deg',
+          },
+          '<'
+        )
+        .from(
+          visuals.eq(2),
+          {
+            x: '10vw',
+            rotate: '0deg',
+          },
+          '<'
+        )
+        .from(
+          visuals.eq(3),
+          {
+            x: '-10vw',
+            rotate: '0deg',
+          },
+          '<'
+        );
+
+      // Opacity
+      tl.fromTo(
+        [visuals],
+        { opacity: 0 },
+        {
+          keyframes: {
+            '30%': {
+              opacity: 1,
+            },
+          },
+          duration: 0.5,
+        },
+        '<'
+      );
+    });
+  },
+
+  // small
+  '(max-width: 479px)': function () {
+    let tl0 = gsap.timeline({
+      scrollTrigger: {
+        trigger: $('.partnership_brands-wrap'),
+        start: 'top 80%',
+        end: 'center bottom',
+        scrub: 1,
       },
-      '<'
-    )
-    .from(
-      visuals.eq(2),
+    });
+
+    // Heading
+    tl0.fromTo(
+      $('.partnership_brands-wrap').find('h2'),
+      { opacity: 0, yPercent: 100 },
       {
-        x: '-10vw',
-        rotate: '0deg',
-      },
-      '<'
-    )
-    .from(
-      visuals.eq(3),
-      {
-        x: '-20vw',
-        rotate: '0deg',
+        keyframes: {
+          '15%': {
+            opacity: 1,
+            yPercent: 0,
+          },
+        },
+        duration: 0.5,
       },
       '<'
     );
 
-  // Opacity
-  tl.fromTo(
-    [visuals],
-    { opacity: 0 },
-    {
-      keyframes: {
-        '30%': {
-          opacity: 1,
+    $('.partnership_brands_visual').each(function () {
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: $(this),
+          start: 'top bottom',
+          end: 'bottom 80%',
+          scrub: 1,
         },
-      },
-      duration: 0.5,
-    },
-    '<'
-  );
+      });
+
+      // Pictures
+      tl.from(
+        $(this),
+        {
+          yPercent: 30,
+          rotate: '0deg',
+          opacity: 0,
+        },
+        '<0.05'
+      );
+    });
+  },
+
+  // all
+  all: function () {
+    // ScrollTriggers created here aren't associated with a particular media query,
+    // so they persist.
+  },
 });
 
 // JoyRide story
@@ -215,6 +366,19 @@ $('.joyride_video-bottom-card').each(function () {
 
   tl.from(text, { opacity: 0 });
   tl.from(visual, { xPercent: visualIsLeft ? 30 : -30, opacity: 0, rotate: 0 }, '<');
+});
+
+// JoyRide Head
+$('.joyride_hero_wrap').each(function () {
+  let visuals = $(this).find('.joyride_hero-visual_img');
+
+  let tl = gsap.timeline({
+    scrollTrigger: { trigger: $(this), start: 'top bottom', end: 'top center', scrub: 1 },
+  });
+
+  tl.from(visuals.eq(0), { xPercent: 200, rotate: '10deg' });
+  tl.from(visuals.eq(1), { yPercent: 100 }, '<');
+  tl.from(visuals.eq(2), { xPercent: -200, rotate: '10deg' }, '<');
 });
 
 // #region footer
@@ -263,7 +427,7 @@ window.dragMoveListener = dragMoveListener;
 
 // Footer Scroll To View
 $('.section_footer').each(function () {
-  let card = $(this).find('.footer_card');
+  let card = $(this).find('.footer_card-wrap');
   let buttons = $(this).find('.footer-wrap_button-block');
   let socials = $(this).find('.footer_socila-link');
 

@@ -14,6 +14,10 @@ $(document).ready(function () {
     };
   }
 
+  function triggerNav() {
+    gsap.to('.hp_navbar', { yPercent: isMoved ? -100 : 0 });
+  }
+
   let isMoved = false;
 
   let tl = gsap.timeline({
@@ -24,17 +28,20 @@ $(document).ready(function () {
       onEnter: debounce(() => {
         if (!isMoved) {
           isMoved = true;
-          gsap.to('.hp_navbar', { yPercent: -100 });
+          triggerNav(isMoved);
         }
       }, 200), // Adjust the debounce delay as needed
       onLeaveBack: debounce(() => {
         if (isMoved) {
           isMoved = false;
-          gsap.to('.hp_navbar', { yPercent: 0 });
+          triggerNav(isMoved);
         }
       }, 200), // Adjust the debounce delay as needed
     },
   });
+
+  // Check on Load
+  triggerNav();
 
   // #endregion
 
@@ -75,8 +82,16 @@ $(document).ready(function () {
 
     tl.fromTo(
       video,
-      { width: '100%', height: '50%', borderRadius: '4rem' },
-      { width: '100vw', height: '100vh', borderRadius: '0rem', ease: 'linear' }
+      { scale: 0.7, borderRadius: '4rem' },
+      { scale: 1, borderRadius: '0rem', ease: 'linear' }
+    );
+    tl.fromTo(
+      $(this).find('.hp_video-overlay'),
+      {
+        opaciy: 1,
+      },
+      { opacity: 0.7 },
+      '<'
     );
   });
 
