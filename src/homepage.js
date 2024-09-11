@@ -50,14 +50,12 @@ $(document).ready(function () {
   $('.hp_hero-heading-wrap.is-last').each(function () {
     let headings = $(this).find('.hp_hero-heading_wrap-inner').add('.hp_video-title-wrap');
 
-    console.log(headings);
-
     let tl = gsap.timeline({
       scrollTrigger: {
         trigger: $(this),
         start: 'bottom bottom',
         end: 'center center',
-        scrub: 1,
+        scrub: 0.1,
       },
     });
 
@@ -120,22 +118,7 @@ $(document).ready(function () {
 
   // HP Candy
   $('.section_hp-candy').each(function () {
-    let heading = $(this).find('h2');
     let visualsWrap = $(this).find('.hp_candy_photo-wrap');
-
-    let button = $(this).find('.hp_candy-bottom-btn');
-
-    heading.each(function () {
-      let tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: $(this),
-          start: 'bottom bottom',
-          end: 'bottom 80%',
-          scrub: 1,
-        },
-      });
-      tl.from($(this), { y: '4rem', opacity: 0 });
-    });
 
     visualsWrap.each(function () {
       let visuals = $(this).find('.hp_candy_visual');
@@ -189,19 +172,6 @@ $(document).ready(function () {
         },
         '<'
       );
-    });
-
-    button.each(function () {
-      let tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: $(this),
-          start: 'center bottom',
-          end: 'bottom bottom',
-          markers: true,
-          scrub: 1,
-        },
-      });
-      tl.from($(this), { opacity: 0 });
     });
   });
 

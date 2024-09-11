@@ -1,3 +1,5 @@
+// #region Animations
+
 // Globals
 gsap.registerPlugin(ScrollTrigger, CustomEase);
 CustomEase.create('primary', '0.51, 0, 0.08, 1');
@@ -79,7 +81,6 @@ $('[data-reveal="parallax"]').each(function () {
 // Stagger
 $('[data-animation="stagger"]').each(function () {
   let cards = $(this).find('[data-animation="item"]');
-  let logos = $(this).find('[data-animation="overlay"]');
   let tl = gsap.timeline({
     scrollTrigger: {
       trigger: $(this),
@@ -88,7 +89,6 @@ $('[data-animation="stagger"]').each(function () {
   });
 
   tl.from(cards, { opacity: 0, scale: 0.9, stagger: 0.1 });
-  tl.from(logos, { y: '2rem', opacity: 0, stagger: 0.1 }, '<0.3');
 });
 
 // -- Split
@@ -142,7 +142,9 @@ ScrollTrigger.matchMedia({
           trigger: $(this),
           start: 'top 80%',
           end: 'bottom top',
-          scrub: 1,
+        },
+        defaults: {
+          ease: 'power4.out',
         },
       });
 
@@ -170,6 +172,7 @@ ScrollTrigger.matchMedia({
         {
           x: '20vw',
           rotate: '0deg',
+          duration: 1.25,
         },
         '<0.05'
       )
@@ -178,6 +181,7 @@ ScrollTrigger.matchMedia({
           {
             x: '10vw',
             rotate: '0deg',
+            duration: 1.25,
           },
           '<'
         )
@@ -186,6 +190,7 @@ ScrollTrigger.matchMedia({
           {
             x: '-10vw',
             rotate: '0deg',
+            duration: 1.25,
           },
           '<'
         )
@@ -194,24 +199,10 @@ ScrollTrigger.matchMedia({
           {
             x: '-20vw',
             rotate: '0deg',
+            duration: 1.25,
           },
           '<'
         );
-
-      // Opacity
-      tl.fromTo(
-        [visuals],
-        { opacity: 0 },
-        {
-          keyframes: {
-            '30%': {
-              opacity: 1,
-            },
-          },
-          duration: 0.5,
-        },
-        '<'
-      );
     });
   },
 
@@ -356,7 +347,7 @@ ScrollTrigger.matchMedia({
 // JoyRide story
 $('.joyride_video-bottom-card').each(function () {
   let tl = gsap.timeline({
-    scrollTrigger: { trigger: $(this), start: 'top 100%', end: 'bottom 80%', scrub: 1 },
+    scrollTrigger: { trigger: $(this), start: '30% 100%' },
   });
 
   let visual = $(this).find('.joyride_video-card_visual');
@@ -376,10 +367,38 @@ $('.joyride_hero_wrap').each(function () {
     scrollTrigger: { trigger: $(this), start: 'top bottom', end: 'top center', scrub: 1 },
   });
 
-  tl.from(visuals.eq(0), { xPercent: 200, rotate: '10deg' });
+  tl.from(visuals.eq(0), { xPercent: 200, yPercent: 50, rotate: '10deg' });
   tl.from(visuals.eq(1), { yPercent: 100 }, '<');
-  tl.from(visuals.eq(2), { xPercent: -200, rotate: '10deg' }, '<');
+  tl.from(visuals.eq(2), { xPercent: -200, yPercent: 50, rotate: '10deg' }, '<');
 });
+
+// JoyRide CTA
+$('.parntership_joyride-visual-wrap').each(function () {
+  let tl = gsap.timeline({
+    scrollTrigger: { trigger: $(this), start: '40% bottom', end: 'top center' },
+  });
+
+  let visuals = $(this)
+    .find('.partnership_joyride_visual._3')
+    .add('.partnership_joyride_visual._2');
+
+  let tag = $(this).find('.partnership_joyride-text-wrap');
+
+  tl.from(visuals, {
+    xPercent: 80,
+    scale: 0.5,
+  });
+  tl.from(
+    tag,
+    {
+      xPercent: 200,
+      scale: 0.5,
+    },
+    '<'
+  );
+});
+
+// #endregion Animations
 
 // #region footer
 
@@ -465,3 +484,104 @@ $('.section_footer').each(function () {
 });
 
 // #endregion
+
+function resetWebflow(data) {
+  let dom = $(new DOMParser().parseFromString(data.next.html, 'text/html')).find('html');
+  // reset webflow interactions
+  $('html').attr('data-wf-page', dom.attr('data-wf-page'));
+  window.Webflow && window.Webflow.destroy();
+  window.Webflow && window.Webflow.ready();
+  window.Webflow && window.Webflow.require('ix2').init();
+  // reset w--current class
+  $('.w--current').removeClass('w--current');
+  $('a').each(function () {
+    if ($(this).attr('href') === window.location.pathname) {
+      $(this).addClass('w--current');
+    }
+  });
+  // Reset scripts
+  dom.find('[data-barba-script]').each(function () {
+    let codeString = $(this).text();
+
+    // Remove "DOMContentLoaded" event listener if present
+    if (codeString.includes('DOMContentLoaded')) {
+      let newCodeString = codeString.replace(
+        /window\.addEventListener\("DOMContentLoaded",\s*\(\s*event\s*\)\s*=>\s*{\s*/,
+        ''
+      );
+      codeString = newCodeString.replace(/\s*}\s*\);\s*$/, '');
+    }
+
+    // Check if the script has a src attribute
+    let src = $(this).attr('src');
+
+    // Remove existing scripts with the same src or text content
+    if (src) {
+      // Remove scripts with the same src
+      $('script[src]')
+        .filter(function () {
+          return $(this).attr('src') === src;
+        })
+        .remove();
+    } else {
+      // Remove inline scripts with the same content
+      $('script:not([src])')
+        .filter(function () {
+          return $(this).text().trim() === codeString.trim();
+        })
+        .remove();
+    }
+
+    // Append the new script
+    let script = document.createElement('script');
+    script.type = 'text/javascript';
+    if (src) {
+      script.src = src;
+    } else {
+      script.text = codeString;
+    }
+
+    document.body.appendChild(script);
+  });
+}
+
+barba.hooks.enter((data) => {
+  gsap.set(data.current.container, {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100Vh',
+  });
+  gsap.set(data.next.container, {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    scale: 0.8,
+    height: '100Vh',
+  });
+});
+barba.hooks.after((data) => {
+  $(window).scrollTop(0);
+  $(data.next.container)[0].style.removeProperty('transform');
+  gsap.set(data.next.container, { position: 'relative', height: 'auto' });
+  resetWebflow(data);
+});
+
+barba.init({
+  preventRunning: true,
+  transitions: [
+    {
+      sync: true,
+      enter(data) {
+        let tl = gsap.timeline({ defaults: { duration: 1, ease: 'power2.out' } });
+        tl.to(data.current.container, { scale: 0.8, rotate: '3deg' });
+        tl.to(data.current.container, { x: '-100vw', rotate: '-3deg' });
+        tl.from(data.next.container, { x: '100vw', rotate: '-6deg' }, '<');
+        tl.to(data.next.container, { scale: 1 });
+        return tl;
+      },
+    },
+  ],
+});
