@@ -29,6 +29,10 @@ function initIndex() {
     });
   }
 
+  function hasStroke(target) {
+    return target.closest('.stroke-heading');
+  }
+
   function animateHeading(item) {
     const text = SplitType.create($(item), { types: 'words' });
 
@@ -36,38 +40,64 @@ function initIndex() {
       scrollTrigger: {
         trigger: $(item),
         start: 'bottom bottom',
-        markers: true,
       },
     });
 
     let words = $(item).find('.word');
 
-    words.each(function () {
-      let isHighlight = $(item).closest('.stroke-heading').length > 0;
+    function hasStroke(element) {
+      return element && element.closest('.stroke-heading') !== null;
+    }
 
-      // els
-      if (!isHighlight) {
-        tl.from($(this), {
-          yPercent: 40,
-          opacity: 0,
-          duration: 0.1,
-          stagger: 0.1,
-        });
-      } else {
-        tl.from($(this), { opacity: 0 }, '<');
-        tl.fromTo(
-          $(item),
-          { scale: 0, rotate: 0 },
-          {
-            scale: 1,
-            rotate: gsap.utils.random(-3, 3, 1),
-            duration: 0.2,
-            ease: 'back.out(1.7)',
-          },
-          '<'
-        );
+    // Convert the `words` (NodeList or jQuery collection) to an array if it's not already
+    const wordElements = gsap.utils.toArray(words);
+
+    // Separate elements into two groups
+    const elementsWithStroke = wordElements.filter((el) => hasStroke(el));
+    const elementsWithoutStroke = wordElements.filter((el) => !hasStroke(el));
+
+    // Apply the 'elastic.out' ease to elements without stroke
+    tl.fromTo(
+      elementsWithoutStroke,
+      {
+        opacity: 0,
+        rotate: 0,
+        yPercent: 40,
+      },
+      {
+        duration: 1,
+        opacity: 1,
+        rotate: 0,
+        scale: 1,
+        yPercent: 0,
+        ease: 'power4.inOut',
+        stagger: {
+          amount: 0.25,
+        },
       }
-    });
+    );
+
+    // Apply the 'power4.inOut' ease to elements with stroke
+    tl.fromTo(
+      elementsWithStroke,
+      {
+        opacity: 0,
+        rotate: 0,
+        yPercent: 40,
+      },
+      {
+        duration: 1.5,
+        opacity: 1,
+        rotate: (index, target) => gsap.utils.random(-3, 3, 1), // dynamic rotate
+        scale: 1,
+        yPercent: 0,
+        ease: 'elastic.out(1.5, 0.5)',
+        stagger: {
+          each: 0.25,
+        },
+      },
+      '<50%'
+    );
   }
 
   ScrollTrigger.matchMedia({
@@ -96,14 +126,11 @@ function initIndex() {
             trigger: visual,
             start: 'top bottom',
             end: 'bottom top',
-            markers: true,
             scrub: 0.5,
           },
         });
 
         tl.from(visual, { rotate: rotation, ease: 'none' });
-
-        console.log(tl.getChildren());
       });
 
       // Parallax
@@ -580,7 +607,6 @@ function ignoreCurrentPageLink(next) {
 
   links.forEach((link) => {
     link.addEventListener('click', (e) => {
-      console.log('click');
       if (link.getAttribute('href') === window.location.pathname) {
         e.preventDefault();
       }
@@ -600,7 +626,7 @@ function transitionPages(data) {
     left: 0,
     width: '100%',
     scale: 0.8,
-    height: '100Vh',
+    height: '100svh',
     x: '100vw',
     rotate: '-6deg',
     borderRadius: '2.4rem',
@@ -613,7 +639,7 @@ function transitionPages(data) {
     top: 0,
     left: 0,
     width: '100%',
-    height: '100Vh',
+    height: '100svh',
     borderRadius: '2.4rem',
   });
 
