@@ -91,7 +91,7 @@ function initIndex() {
         rotate: (index, target) => gsap.utils.random(-3, 3, 1), // dynamic rotate
         scale: 1,
         yPercent: 0,
-        ease: 'elastic.out(1.5, 0.5)',
+        ease: 'elastic.out(1, 0.7)',
         stagger: {
           each: 0.25,
         },
