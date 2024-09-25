@@ -62,10 +62,10 @@ function initIndex() {
       {
         opacity: 0,
         rotate: 0,
-        yPercent: 40,
+        yPercent: 100,
       },
       {
-        duration: 1,
+        duration: 0.75,
         opacity: 1,
         rotate: 0,
         scale: 1,
@@ -83,10 +83,10 @@ function initIndex() {
       {
         opacity: 0,
         rotate: 0,
-        yPercent: 40,
+        yPercent: 100,
       },
       {
-        duration: 1.5,
+        duration: 1,
         opacity: 1,
         rotate: (index, target) => gsap.utils.random(-3, 3, 1), // dynamic rotate
         scale: 1,
@@ -613,7 +613,6 @@ function ignoreCurrentPageLink(next) {
     });
   });
 }
-
 function transitionPages(data) {
   let currPreloader = $(data.current.container).find('.preloader');
   let nextPreloader = $(data.next.container).find('.preloader');
@@ -651,7 +650,6 @@ function transitionPages(data) {
 
   return tl; // Make sure to return the timeline
 }
-
 function killAllTriggers() {
   return new Promise((resolve) => {
     let triggers = ScrollTrigger.getAll();
@@ -683,7 +681,6 @@ function cleanAllProps(data) {
     resolve(); // Resolve when done clearing properties
   });
 }
-
 function reInitAnimations(data) {
   // Re-initialize animations
   initIndex();

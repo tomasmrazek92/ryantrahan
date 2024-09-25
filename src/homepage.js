@@ -49,6 +49,7 @@ $(document).ready(function () {
   // #endregion
 
   // #region Animations
+
   // HP Video Title
   $('.hp_hero-heading-wrap.is-last').each(function () {
     let headings = $(this).find('.hp_hero-heading_wrap-inner').add('.hp_video-title-wrap');
@@ -70,7 +71,7 @@ $(document).ready(function () {
   });
 
   ScrollTrigger.matchMedia({
-    //   // HP Brands
+    // HP Brands
     '(min-width: 992px)': function () {
       // HP Video
       $('.hp_video').each(function () {
