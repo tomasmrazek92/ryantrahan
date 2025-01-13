@@ -630,7 +630,7 @@ function transitionPages(data) {
     rotate: '-6deg',
     borderRadius: '2.4rem',
   });
-  tl.to($(data.current.container).children().not(currPreloader), { opacity: 0, duration: 0.5 });
+  tl.to($(data.current.container).children().not(currPreloader), { duration: 0.5 });
   tl.to(currPreloader, { opacity: 1, display: 'flex', duration: 0.5 }, '<');
   // Set containers to be fixed
   tl.set(data.current.container, {
@@ -646,7 +646,11 @@ function transitionPages(data) {
     .to(data.current.container, { x: '-100vw', rotate: '-3deg', duration: 0.5 })
     .to(data.next.container, { x: '0', rotate: '0', duration: 0.5 }, '<')
     .to(nextPreloader, { opacity: 1, display: 'flex', duration: 0.5 }, '<')
-    .to(data.next.container, { scale: 1, borderRadius: '0rem', duration: 0.5 });
+    .to(data.next.container, {
+      scale: 1,
+      borderRadius: '0rem',
+      duration: 0.5,
+    });
 
   return tl; // Make sure to return the timeline
 }
@@ -693,6 +697,7 @@ barba.init({
     {
       name: 'gsap-transition',
       async enter(data) {
+        $('html').addClass('no-animation');
         // Transition animations between pages, like fading in the new container
         await transitionPages(data);
       },
@@ -702,6 +707,7 @@ barba.init({
       },
       after(data) {
         reInitAnimations(data);
+        $('html').removeClass('no-animation');
       },
     },
   ],
