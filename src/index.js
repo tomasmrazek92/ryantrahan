@@ -696,8 +696,10 @@ barba.init({
   transitions: [
     {
       name: 'gsap-transition',
-      async enter(data) {
+      async beforeLeave(data) {
         $('html').addClass('no-animation');
+      },
+      async enter(data) {
         // Transition animations between pages, like fading in the new container
         await transitionPages(data);
       },
