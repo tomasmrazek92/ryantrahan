@@ -650,9 +650,6 @@ function transitionPages(data) {
       scale: 1,
       borderRadius: '0rem',
       duration: 0.5,
-      onComplete: () => {
-        $('html').addClass('enable-animation');
-      },
     });
 
   return tl; // Make sure to return the timeline
