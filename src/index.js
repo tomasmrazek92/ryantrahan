@@ -651,7 +651,7 @@ function transitionPages(data) {
       borderRadius: '0rem',
       duration: 0.5,
       onComplete: () => {
-        $('html').removeClass('no-animation');
+        $('html').addClass('enable-animation');
       },
     });
 
@@ -700,7 +700,7 @@ barba.init({
     {
       name: 'gsap-transition',
       async beforeLeave(data) {
-        $('html').addClass('no-animation');
+        $('html').removeClass('enable-animation');
       },
       async enter(data) {
         // Transition animations between pages, like fading in the new container
